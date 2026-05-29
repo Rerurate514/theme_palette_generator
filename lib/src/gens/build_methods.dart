@@ -81,7 +81,6 @@ Iterable<Method> buildMethods(String className, Iterable<FieldElement> fields) {
             .property('extension')
             .call([], {}, [refer(className)])
             .nullChecked
-            .returned
             .code,
     ),
   ];
