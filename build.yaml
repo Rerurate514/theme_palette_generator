@@ -4,4 +4,5 @@ builders:
     builder_factories: ["themePaletteBuilder"]
     build_extensions: {".dart": [".theme.g.dart"]}
     auto_apply: dependents
+    build_to: source
     applies_builders: ["source_gen|combining_builder"]
