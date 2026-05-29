@@ -11,6 +11,7 @@ Constructor buildConstructor(Iterable<FieldElement> fields) {
             (p) => p
               ..name = field.name!
               ..toThis = true
+              ..named = true
               ..required = true
           ),
         ),
