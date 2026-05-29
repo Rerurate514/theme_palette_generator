@@ -25,7 +25,7 @@ Iterable<Method> buildMethods(
         ..annotations.add(refer('override'))
         ..returns = refer(className)
         ..optionalParameters.addAll(
-          params.map(
+          parameters.map(
             (p) => Parameter(
               (p2) => p2
                 ..name = p.name!
@@ -33,7 +33,11 @@ Iterable<Method> buildMethods(
                 ..named = true,
             ),
           ),
-        ),
+        )
+        ..body = refer('_$className').call([], {
+          for (final p in parameters)
+            p.name!: refer(p.name!).ifNullThen(refer('this').property(p.name!)),
+        }).code,
     ),
 
     // lerp
