@@ -41,19 +41,19 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
         .where((p) => p.type.getDisplayString() == 'Color')
         .toList();
 
-    final abstractClass = Class(
-      (b) => b
+    final mixinType = Mixin(
+      (x) => x
         ..name = '_\$$className'
-        ..abstract = true
-        ..extend = refer('ThemeExtension<$className>')
-        ..constructors.add(Constructor((c) => c..constant = true))
+        ..on = refer('ThemeExtension<$className>')
         ..methods.addAll(buildMethods(className, colorParams)),
     );
 
     final implClass = Class(
       (b) => b
         ..name = '_$className'
-        ..extend = refer(className)
+        ..extend = refer('ThemeExtension<$className>')
+        ..mixins.add(refer('_\$$className'))
+        ..implements.add(refer(className))
         ..constructors.add(
           Constructor(
             (c) => c
@@ -63,17 +63,12 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
                   (p) => Parameter(
                     (p2) => p2
                       ..name = p.name!
-                      ..type = refer('Color')
+                      ..toThis = true
                       ..named = true
                       ..required = true,
                   ),
                 ),
-              )
-              ..initializers.addAll(colorParams.map(
-                  (p) => refer(
-                    'this',
-                  ).property(p.name!).assign(refer(p.name!)).code,
-                ),),
+              ),
           ),
         )
         ..fields.addAll(
@@ -86,7 +81,7 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
                 ..annotations.add(refer('override')),
             ),
           ),
-        ),
+        )
     );
 
     final contextExtension = Extension(
@@ -112,13 +107,12 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
     );
 
     final emitter = DartEmitter(useNullSafetySyntax: true);
-    final abstractCode = abstractClass.accept(emitter).toString();
+    final mixinCode = mixinType.accept(emitter).toString();
     final implCode = implClass.accept(emitter).toString();
     final contextExtensionCode = contextExtension.accept(emitter).toString();
 
-    final finalCode =
-        '''
-$abstractCode
+    final finalCode = '''
+$mixinCode
 
 $implCode
 
