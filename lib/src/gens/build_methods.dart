@@ -85,7 +85,6 @@ Iterable<Method> buildMethods(
     ),
 
     // == operator
-    // == operator
     Method(
       (m) => m
         ..name = 'operator =='
@@ -121,31 +120,7 @@ Iterable<Method> buildMethods(
             .statement,
     ),
 
-    // debugFillProperties
-    Method(
-      (m) => m
-        ..name = 'debugFillProperties'
-        ..annotations.add(refer('override'))
-        ..returns = refer('void')
-        ..requiredParameters.add(
-          Parameter(
-            (p) => p
-              ..name = 'properties'
-              ..type = refer('DiagnosticPropertiesBuilder'),
-          ),
-        )
-        ..body = Block.of([
-          Code('super.debugFillProperties(properties);'),
-          ...params.map(
-            (p) => refer('properties').property('add').call([
-              refer(
-                'ColorProperty',
-              ).call([literalString(p.name!), refer(p.name!)]),
-            ]).statement,
-          ),
-        ]),
-    ),
-
+    // buildTheme
     Method(
       (m) => m
         ..name = 'buildTheme'
