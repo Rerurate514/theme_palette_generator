@@ -46,7 +46,6 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
         ..name = '_\$$className'
         ..abstract = true
         ..extend = refer('ThemeExtension<$className>')
-        ..mixins.add(refer('Diagnosticable'))
         ..constructors.add(Constructor((c) => c..constant = true))
         ..methods.addAll(buildMethods(className, colorParams)),
     );
@@ -70,14 +69,11 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
                   ),
                 ),
               )
-              ..initializers.addAll([
-                ...colorParams.map(
+              ..initializers.addAll(colorParams.map(
                   (p) => refer(
                     'this',
                   ).property(p.name!).assign(refer(p.name!)).code,
-                ),
-                Code('super._()'),
-              ]),
+                ),),
           ),
         )
         ..fields.addAll(
