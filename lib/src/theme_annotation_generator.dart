@@ -37,48 +37,96 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
       ),
     );
 
-    final colorParams = constructor.formalParameters.where(
-      (p) => p.type.getDisplayString() == 'Color',
-    ).toList();
+    final colorParams = constructor.formalParameters
+        .where((p) => p.type.getDisplayString() == 'Color')
+        .toList();
 
     final abstractClass = Class(
       (b) => b
         ..name = '_\$$className'
         ..abstract = true
         ..extend = refer('ThemeExtension<$className>')
+        ..mixins.add(refer('Diagnosticable'))
         ..constructors.add(Constructor((c) => c..constant = true))
-        ..methods.addAll(
-          buildMethods(className, colorParams)
-        ),
+        ..methods.addAll(buildMethods(className, colorParams)),
     );
 
     final implClass = Class(
       (b) => b
         ..name = '_$className'
         ..extend = refer(className)
-        ..constructors.add(Constructor((c) => c
-          ..constant = true
-          ..optionalParameters.addAll(colorParams.map((p) => Parameter((p2) => p2
-            ..name = p.name!
-            ..type = refer('Color')
-            ..named = true
-            ..required = true)))
-          ..initializers.addAll(colorParams.map((p) => refer('this').property(p.name!).assign(refer(p.name!)).code))))
-        ..fields.addAll(colorParams.map((p) => Field((f) => f
-          ..name = p.name
-          ..type = refer('Color')
-          ..modifier = FieldModifier.final$
-          ..annotations.add(refer('override'))))),
+        ..constructors.add(
+          Constructor(
+            (c) => c
+              ..constant = true
+              ..optionalParameters.addAll(
+                colorParams.map(
+                  (p) => Parameter(
+                    (p2) => p2
+                      ..name = p.name!
+                      ..type = refer('Color')
+                      ..named = true
+                      ..required = true,
+                  ),
+                ),
+              )
+              ..initializers.addAll([
+                ...colorParams.map(
+                  (p) => refer(
+                    'this',
+                  ).property(p.name!).assign(refer(p.name!)).code,
+                ),
+                Code('super._()'),
+              ]),
+          ),
+        )
+        ..fields.addAll(
+          colorParams.map(
+            (p) => Field(
+              (f) => f
+                ..name = p.name
+                ..type = refer('Color')
+                ..modifier = FieldModifier.final$
+                ..annotations.add(refer('override')),
+            ),
+          ),
+        ),
+    );
+
+    final contextExtension = Extension(
+      (b) => b
+        ..name = '${className}BuildContextExtension'
+        ..on = refer('BuildContext')
+        ..methods.add(
+          Method(
+            (m) => m
+              ..name = 'themePalette'
+              ..type = MethodType.getter
+              ..returns = refer(className)
+              ..body = refer('Theme')
+                  .property('of')
+                  .call([refer('this')])
+                  .property('extension')
+                  .call([], {}, [refer(className)])
+                  .nullChecked
+                  .returned
+                  .statement,
+          ),
+        ),
     );
 
     final emitter = DartEmitter(useNullSafetySyntax: true);
     final abstractCode = abstractClass.accept(emitter).toString();
     final implCode = implClass.accept(emitter).toString();
+    final contextExtensionCode = contextExtension.accept(emitter).toString();
 
-    final finalCode = '''
+    final finalCode =
+        '''
 $abstractCode
 
 $implCode
+
+$contextExtensionCode
 ''';
 
     return DartFormatter(
