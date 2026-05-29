@@ -24,14 +24,16 @@ Iterable<Method> buildMethods(
         ..name = 'copyWith'
         ..annotations.add(refer('override'))
         ..returns = refer(className)
-        ..optionalParameters.addAll(params.map(
+        ..optionalParameters.addAll(
+          params.map(
             (p) => Parameter(
               (p2) => p2
                 ..name = p.name!
                 ..type = refer('Color?')
                 ..named = true,
             ),
-          ),),
+          ),
+        ),
     ),
 
     // lerp
@@ -66,29 +68,6 @@ Iterable<Method> buildMethods(
               .returned
               .statement,
         ]),
-    ),
-
-    // of(BuildContext)
-    Method(
-      (m) => m
-        ..name = 'of'
-        ..static = true
-        ..returns = refer(className)
-        ..requiredParameters.add(
-          Parameter(
-            (p) => p
-              ..name = 'context'
-              ..type = refer('BuildContext'),
-          ),
-        )
-        ..body = refer('Theme')
-            .property('of')
-            .call([refer('context')])
-            .property('extension')
-            .call([])
-            .nullChecked
-            .returned
-            .statement,
     ),
 
     // toMap
@@ -161,6 +140,30 @@ Iterable<Method> buildMethods(
             ]).statement,
           ),
         ]),
+    ),
+
+    Method(
+      (m) => m
+        ..name = 'buildTheme'
+        ..returns = refer('ThemeData')
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'base'
+              ..named = true
+              ..type = refer('ThemeData'),
+          ),
+        )
+        ..body = refer('base')
+            .property('copyWith')
+            .call([], {
+              'extensions': literalList([
+                CodeExpression(Code('...base.extensions.values')),
+                refer('this'),
+              ]),
+            })
+            .returned
+            .statement,
     ),
   ];
 }
