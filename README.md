@@ -1,4 +1,7 @@
 # theme_palette_generator
+
+日本語版 -> https://github.com/Rerurate514/theme_palette_generator/blob/main/README-ja.md
+
 A Flutter package for managing custom colors outside of Dynamic Color.
 Useful for projects that need fine-grained brand color management or design systems that Dynamic Color alone can't handle.
 
