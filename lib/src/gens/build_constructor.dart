@@ -5,12 +5,13 @@ Constructor buildConstructor(Iterable<FieldElement> fields) {
   return Constructor(
     (c) => c
       ..constant = true
-      ..requiredParameters.addAll(
+      ..optionalParameters.addAll(
         fields.map(
           (field) => Parameter(
             (p) => p
               ..name = field.name!
-              ..toThis = true,
+              ..toThis = true
+              ..required = true
           ),
         ),
       ),
