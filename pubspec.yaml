@@ -1,6 +1,6 @@
 name: theme_palette_generator
 description: "A code generator that automatically creates Flutter ThemeExtensions for custom design systems and color palettes."
-version: 0.0.2
+version: 0.0.4
 repository: https://github.com/Rerurate514/theme_palette_generator
 homepage: https://rerurate.com
 issue_tracker: https://github.com/Rerurate514/theme_palette_generator/issues
@@ -12,7 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  analyzer: ^10.0.1
+  analyzer: '>=7.0.0 <11.0.0'
   source_gen: ^4.2.3
   code_builder: ^4.11.1
   build: ^4.0.6
