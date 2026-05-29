@@ -210,8 +210,6 @@ BuildContext
 AppColorSchemeBuildContextExtension → context.themePalette を提供
 ```
 
-sealed classとfreezeの仕様上の違いによる制約で、`extends`ベースの実装ではコンストラクタをユーザー側のクラスから排除できませんでした。mixinを使うことでこの制約を迂回し、ファクトリだけで完結する実装にしています。
-
 ---
 
 ## Dependencies

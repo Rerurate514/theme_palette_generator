@@ -210,8 +210,6 @@ BuildContext
 AppColorSchemeBuildContextExtension → provides context.themePalette
 ```
 
-Due to a constraint from the difference between `sealed class` and freezed's internals, an `extends`-based approach made it impossible to eliminate the constructor on the user-facing class. Using a `mixin` works around this constraint, keeping the implementation entirely factory-based.
-
 ---
 
 ## Dependencies
