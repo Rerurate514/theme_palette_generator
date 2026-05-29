@@ -5,5 +5,6 @@ import 'package:theme_palette_generator/src/theme_annotation_generator.dart';
 Builder themePaletteBuilder(BuilderOptions options) {
   return LibraryBuilder(
     ThemeAnnotationGenerator(),
+    generatedExtension: '.theme.g.dart',
   );
 }
