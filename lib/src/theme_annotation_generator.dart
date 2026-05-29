@@ -54,6 +54,7 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
         ..extend = refer('ThemeExtension<$className>')
         ..mixins.add(refer('_\$$className'))
         ..implements.add(refer(className))
+        ..annotations.add(refer('immutable'))
         ..constructors.add(
           Constructor(
             (c) => c
