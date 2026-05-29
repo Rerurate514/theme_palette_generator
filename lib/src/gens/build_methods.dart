@@ -19,18 +19,14 @@ Iterable<Method> buildMethods(String className, Iterable<FieldElement> fields) {
           ),
         )
         ..body = Block((b) {
-          final buffer = StringBuffer();
-          buffer.writeln('return $className(');
-
+          final namedArgs = <String, Expression>{};
           for (final field in fields) {
-            buffer.writeln(
-              '${field.name}: ${field.name} ?? this.${field.name},',
+            namedArgs[field.name!] = CodeExpression(
+              Code('${field.name} ?? this.${field.name}'),
             );
           }
 
-          buffer.writeln(');');
-
-          b.addExpression(CodeExpression(Code(buffer.toString())));
+          b.addExpression(refer(className).call([], namedArgs).returned);
         }),
     ),
     Method(
@@ -51,19 +47,20 @@ Iterable<Method> buildMethods(String className, Iterable<FieldElement> fields) {
           ),
         ])
         ..body = Block((b) {
-          final buffer = StringBuffer();
-          buffer.writeln('if (other is! $className) return this;');
-          buffer.writeln('return $className(');
+          b.statements.add(
+            Code('if (other is! $className) return this;'),
+          );
 
+          final namedArgs = <String, Expression>{};
           for (final field in fields) {
-            buffer.writeln(
-              '${field.name}: Color.lerp(${field.name}, other.${field.name}, t)!,',
+            namedArgs[field.name!] = CodeExpression(
+              Code('Color.lerp(${field.name}, other.${field.name}, t)!'),
             );
           }
 
-          buffer.writeln(');');
-
-          b.addExpression(CodeExpression(Code(buffer.toString())));
+          b.addExpression(
+            refer(className).call([], namedArgs).returned,
+          );
         }),
     ),
     Method(
@@ -78,13 +75,14 @@ Iterable<Method> buildMethods(String className, Iterable<FieldElement> fields) {
               ..type = refer('BuildContext'),
           ),
         )
-        ..body = Block((b) {
-          final buffer = StringBuffer();
-
-          buffer.writeln('return Theme.of(context).extension<$className>()!;');
-
-          b.addExpression(CodeExpression(Code(buffer.toString())));
-        }),
+        ..body = refer('Theme')
+            .property('of')
+            .call([refer('context')])
+            .property('extension')
+            .call([], {}, [refer(className)])
+            .nullChecked
+            .returned
+            .code,
     ),
   ];
 }
