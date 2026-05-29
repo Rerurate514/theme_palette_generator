@@ -49,8 +49,14 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
     final emitter = DartEmitter(useNullSafetySyntax: true);
     final rawCode = paletteClass.accept(emitter).toString();
 
+    final codeWithImports = '''
+    import 'package:flutter/material.dart';
+
+    $rawCode
+    ''';
+
     return DartFormatter(
       languageVersion: DartFormatter.latestLanguageVersion,
-    ).format(rawCode);
+    ).format(codeWithImports);
   }
 }
