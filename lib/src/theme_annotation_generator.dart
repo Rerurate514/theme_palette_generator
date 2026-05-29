@@ -32,6 +32,7 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
 
     final paletteClass = Class(
       (b) => b
+        ..annotations.add(refer('immutable'))
         ..name = generatedClassName
         ..extend = refer('ThemeExtension<$generatedClassName>')
         ..constructors.add(
