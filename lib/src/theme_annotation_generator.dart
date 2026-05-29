@@ -4,9 +4,7 @@ import 'package:theme_palette_generator/src/annotations.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:theme_palette_generator/src/gens/build_constructor.dart';
 import 'package:theme_palette_generator/src/gens/build_methods.dart';
-import 'package:theme_palette_generator/src/gens/buld_fields.dart';
 
 class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
   @override
@@ -22,41 +20,27 @@ class ThemeAnnotationGenerator extends GeneratorForAnnotation<ThemePalette> {
       );
     }
 
-    final baseClassName = element.name; 
-    final generatedClassName = '${baseClassName}Generated';
+    final className = element.name!; 
 
     final fields = element.fields.where((field) {
       final typeName = field.type.getDisplayString();
       return typeName == 'Color';
     });
 
-    final paletteClass = Class(
+    final themeMixin = Mixin(
       (b) => b
-        ..annotations.add(refer('immutable'))
-        ..name = generatedClassName
-        ..extend = refer('ThemeExtension<$generatedClassName>')
-        ..constructors.add(
-          buildConstructor(fields)
-        )
-        ..fields.addAll(
-          buildFields(fields)
-        )
+        ..name = '_\$$className'
+        ..on = refer('ThemeExtension<$className>')
         ..methods.addAll(
-          buildMethods(generatedClassName, fields)
+          buildMethods(className, fields)
         ),
     );
 
     final emitter = DartEmitter(useNullSafetySyntax: true);
-    final rawCode = paletteClass.accept(emitter).toString();
-
-    final codeWithImports = '''
-    import 'package:flutter/material.dart';
-
-    $rawCode
-    ''';
+    final rawCode = themeMixin.accept(emitter).toString();
 
     return DartFormatter(
       languageVersion: DartFormatter.latestLanguageVersion,
-    ).format(codeWithImports);
+    ).format(rawCode);
   }
 }

@@ -2,7 +2,14 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 
 Iterable<Method> buildMethods(String className, Iterable<FieldElement> fields) {
+  final colorGetters = fields.map((field) => Method((m) => m
+    ..name = field.name
+    ..type = MethodType.getter
+    ..returns = refer('Color'),
+  ));
+
   return [
+    ...colorGetters,
     Method(
       (m) => m
         ..name = 'copyWith'
