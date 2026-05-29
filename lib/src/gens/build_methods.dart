@@ -144,5 +144,14 @@ Iterable<Method> buildMethods(
             .returned
             .statement,
     ),
+
+    Method((m) => m
+      ..annotations.add(refer('override'))
+      ..returns = refer('Object')
+      ..name = 'type'
+      ..type = MethodType.getter
+      ..lambda = true
+      ..body = refer('AppColorScheme').code
+    )
   ];
 }
